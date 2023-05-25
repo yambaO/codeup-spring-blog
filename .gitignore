@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+/codeup-spring-blog/node_modules
