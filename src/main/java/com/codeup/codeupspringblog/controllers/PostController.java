@@ -1,50 +1,46 @@
 package com.codeup.codeupspringblog.controllers;
 
 import com.codeup.codeupspringblog.models.Post;
+import com.codeup.codeupspringblog.repositories.PostsRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class PostController {
 
+    private PostsRepository postsDao;
+
+    public PostController(PostsRepository postsDao){
+        this.postsDao = postsDao;
+    }
+
     @GetMapping("/posts")
     public String allPosts(Model model) {
-        ArrayList<Post> posts = new ArrayList<>();
-        Post post1 = new Post("Title 1", "Body 1");
-        Post post2 = new Post("Title A", "Body A");
-        posts.add(post2);
-        posts.add(post1);
-
+        List<Post> posts = postsDao.findAll();
         model.addAttribute("posts", posts);
-
         return "posts/index";
     }
 
 
     @GetMapping("/posts/{id}")
-    public String individualPost(Model model) {
-        Post post = new Post("The only post", "The only body");
-
+    public String individualPost(@PathVariable long id, Model model) {
+        Post post = postsDao.findById(id);
         model.addAttribute("post", post);
-
         return "posts/show";
     }
 
     @GetMapping("/posts/create")
-    @ResponseBody
     public String createForm() {
-        return "view the form for creating a post";
+        return "posts/create";
     }
 
     @PostMapping("/posts/create")
-    @ResponseBody
-    public String submitForm() {
-        return "create a new post";
+    public String submitForm(@RequestParam(name="title") String title, @RequestParam(name="body") String body) {
+        Post post = new Post(title, body);
+        postsDao.save(post);
+        return "redirect:/posts";
     }
 }
-
