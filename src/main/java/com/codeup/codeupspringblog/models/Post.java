@@ -2,6 +2,8 @@ package com.codeup.codeupspringblog.models;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name="posts")
 public class Post {
@@ -15,15 +17,13 @@ public class Post {
 
     @Column(nullable = false, length=500)
     private String body;
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "user_id")
+
+    @ManyToOne
+    @JoinColumn(name="user_id")
     private User user;
 
-    public Post(String title, String body, User user) {
-        this.title = title;
-        this.body = body;
-        this.user = user;
-    }
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "post")
+    private List<Comment> comments;
 
     public long getId() {
         return id;
@@ -49,6 +49,22 @@ public class Post {
         this.body = body;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
     public Post() {
     }
 
@@ -57,9 +73,9 @@ public class Post {
         this.body = body;
     }
 
-    public Post(long id, String title, String body) {
-        this.id = id;
+    public Post(String title, String body, User user) {
         this.title = title;
         this.body = body;
+        this.user = user;
     }
 }
